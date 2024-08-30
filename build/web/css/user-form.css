@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f2f2f2;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+form {
+    background-color: #fff;
+    padding: 30px;
+    margin: 0 auto;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin: 15px 0 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+input[type="file"] {
+    display: block;
+    margin-top: 10px;
+}
+
+/* Additional style for the image with class "menu-image" */
+.menu-image {
+    border: 2px solid #ddd;
+    border-radius: 70px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    background-color: #fff;
+    max-width: 300px; /* Ensure the image does not exceed 300px */
+    height: auto;
+}
+
+.image-container {
+    text-align: center; /* Center-aligns the image within the container */
+    margin: 20px 0; /* Adds space above and below the image */
+}
