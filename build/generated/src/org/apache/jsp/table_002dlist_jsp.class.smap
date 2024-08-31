@@ -1,0 +1,18 @@
+SMAP
+table_002dlist_jsp.java
+JSP
+*S JSP
+*F
++ 0 table-list.jsp
+table-list.jsp
+*L
+1,23:46
+24,4:70
+27,2:74
+29,3:76,3
+32:85
+33,2:86,3
+35,3:92
+39,3:97
+41,6:100
+*E
