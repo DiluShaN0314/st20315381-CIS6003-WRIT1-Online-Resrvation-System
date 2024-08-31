@@ -58,7 +58,9 @@
             <% if (user != null && user.getRoleId() != 3) { %>
                 <a href="MenuController?action=edit&id=<%= menu.getId() %>" style="margin-right: 10px;">Edit</a>
                 <a href="MenuController?action=delete&id=<%= menu.getId() %>" onclick="return confirm('Are you sure?');">Delete</a>
-            <% } %>
+            <% } else {%>
+                <a href="OrderController?action=new&id=<%= user.getId() %>">Place Order</a>
+            <% }%>
         </div>
         <%
                 }

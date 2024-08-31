@@ -24,10 +24,11 @@
             let rows = document.querySelectorAll('tbody tr');
             rows.forEach(row => {
                 let id = row.children[0].innerText.toLowerCase();
-                let userId = row.children[1].innerText.toLowerCase();
-                let guests = row.children[2].innerText.toLowerCase();
-                let status = row.children[3].innerText.toLowerCase();
-                let date = row.children[4].innerText.toLowerCase();
+                let userId = row.children.length > 5 ? row.children[1].innerText.toLowerCase() : ''; // Adjusted index for userId
+                let guests = row.children.length > 5 ? row.children[2].innerText.toLowerCase() : row.children[1].innerText.toLowerCase();
+                let status = row.children.length > 5 ? row.children[3].innerText.toLowerCase() : row.children[2].innerText.toLowerCase();
+                let date = row.children.length > 5 ? row.children[4].innerText.toLowerCase() : row.children[3].innerText.toLowerCase();
+                
                 if (id.includes(input) || userId.includes(input) || guests.includes(input) || status.includes(input) || date.includes(input)) {
                     row.style.display = '';
                 } else {
@@ -42,6 +43,7 @@
         // Retrieve the user object from the session
         User user = (User) session.getAttribute("user"); 
         int customerId = (user != null) ? user.getId() : -1; // default to -1 if user is null
+        boolean isCustomer = user != null && user.getRoleId() == 3; // assuming role 3 is customer
     %>
     <h2>Reservation List</h2>
     <a href="ReservationController?action=new&id=<%= customerId %>" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">Add New Reservation</a>
@@ -53,7 +55,9 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <% if (!isCustomer) { %>
                 <th>User ID</th>
+                <% } %>
                 <th>Number Of Guests</th>
                 <th>Status</th>
                 <th>Reservation Date</th>
@@ -68,7 +72,9 @@
             %>
             <tr>
                 <td><%= reservation.getReservationID() %></td>
+                 <% if (!isCustomer) { %>
                 <td><%= reservation.getCustomerID() %></td>
+                <% } %>
                 <td><%= reservation.getNumberOfGuests() %></td>
                 <td><%= reservation.getStatus() %></td>
                 <td><%= reservation.getReservationTime() %></td>

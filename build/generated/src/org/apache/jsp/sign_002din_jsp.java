@@ -48,7 +48,7 @@ public final class sign_002din_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    <meta charset=\"UTF-8\">\n");
       out.write("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
       out.write("    <title>User Sign In</title>\n");
-      out.write("    <link rel=\"stylesheet\" href=\"sign-in.css\">\n");
+      out.write("    <link rel=\"stylesheet\" href=\"css/sign-in.css\">\n");
       out.write("</head>\n");
       out.write("<body>\n");
       out.write("    <h2>Sign In</h2>\n");
@@ -71,6 +71,11 @@ public final class sign_002din_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            </div>\n");
       out.write("        </c:if>\n");
       out.write("    </form>\n");
+      out.write("            \n");
+      out.write("            \n");
+      out.write("    <div style=\"text-align: center; margin-top: 20px;\">\n");
+      out.write("        <p>Don't have an account? <a href=\"register.jsp\">Create a new account</a></p>\n");
+      out.write("    </div>\n");
       out.write("</body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {

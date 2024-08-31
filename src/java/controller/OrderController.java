@@ -1,6 +1,7 @@
 package controller;
 
 import dao.OrderDAO;
+import dao.TableDAO;
 import model.Order;
 import model.Menu;
 import model.Table;
@@ -25,11 +26,13 @@ import model.User;
 public class OrderController extends HttpServlet {
 
     private OrderDAO orderDAO;
+    private TableDAO tableDAO;
 
     @Override
     public void init() throws ServletException {
         try {
             orderDAO = new OrderDAO();
+            tableDAO = new TableDAO();
         } catch (SQLException ex) {
             Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -63,7 +66,13 @@ public class OrderController extends HttpServlet {
         }
                 break;
             case "list":
+        {
+            try {
                 listOrders(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
                 break;
             case "edit":
                 showEditForm(request, response);
@@ -87,20 +96,35 @@ public class OrderController extends HttpServlet {
         }
                 break;
             default:
-                 listOrders(request, response);
+        {
+            try {
+                listOrders(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
                 break;
         }
     }
 
     private void listOrders(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        
         int customerId = user.getId();
-
+                
         try {
+            List<Table> tableList = tableDAO.getAllTables();
+            Map<Integer, Table> tableMap = new HashMap<>();
+            for (Table table : tableList) {
+                tableMap.put(table.getId(), table);
+            }
+
+
             List<Order> orderList = orderDAO.getOrdersByCustomerId(customerId);
             request.setAttribute("orderList", orderList);
+            request.setAttribute("tableMap", tableMap);
             RequestDispatcher dispatcher = request.getRequestDispatcher("order-list.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
@@ -122,7 +146,7 @@ public class OrderController extends HttpServlet {
             request.setAttribute("menuList", menuList);
             request.setAttribute("tableList", tableList);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/OrderController");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("order.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException(e);
@@ -194,49 +218,42 @@ public class OrderController extends HttpServlet {
 
     private void placeOrder(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException, SQLException {
-    HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
-    int customerId = user.getId(); // Use session's user ID
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        int customerId = user.getId(); // Use session's user ID
 
-    Map<Integer, Integer> itemQuantities = new HashMap<>();
-    for (String paramName : request.getParameterMap().keySet()) {
-        if (paramName.startsWith("quantities[")) {
-            int itemId = Integer.parseInt(paramName.substring(11, paramName.length() - 1));
-            int quantity = Integer.parseInt(request.getParameter(paramName));
-            itemQuantities.put(itemId, quantity);
+        Map<Integer, Integer> itemQuantities = new HashMap<>();
+        for (String paramName : request.getParameterMap().keySet()) {
+            if (paramName.startsWith("quantities[")) {
+                int itemId = Integer.parseInt(paramName.substring(11, paramName.length() - 1));
+                int quantity = Integer.parseInt(request.getParameter(paramName));
+                itemQuantities.put(itemId, quantity);
+            }
         }
+
+        String orderType = request.getParameter("orderType");
+        Integer tableId = null;
+        if ("Dine-In".equals(orderType)) {
+            tableId = Integer.parseInt(request.getParameter("tableId"));
+        }
+
+        double total = 0;
+        for (Map.Entry<Integer, Integer> entry : itemQuantities.entrySet()) {
+            int itemId = entry.getKey();
+            int quantity = entry.getValue();
+            double price = orderDAO.getItemPrice(itemId);
+            total += quantity * price;
+        }
+
+        Order order = new Order();
+        order.setCustomerId(customerId);
+        order.setItemQuantities(itemQuantities);
+        order.setOrderType(orderType);
+        order.setTableId(tableId);
+        order.setTotal(total);
+
+        orderDAO.addOrder(order);
+        response.sendRedirect("OrderController?action=list&id=" + customerId);
     }
 
-    String orderType = request.getParameter("orderType");
-    Integer tableId = null;
-    if ("Dine-In".equals(orderType)) {
-        tableId = Integer.parseInt(request.getParameter("tableId"));
-    }
-
-    double total = 0;
-    for (Map.Entry<Integer, Integer> entry : itemQuantities.entrySet()) {
-        int itemId = entry.getKey();
-        int quantity = entry.getValue();
-        double price = orderDAO.getItemPrice(itemId);
-        total += quantity * price;
-    }
-
-    Order order = new Order();
-    order.setCustomerId(customerId);
-    order.setItemQuantities(itemQuantities);
-    order.setOrderType(orderType);
-    order.setTableId(tableId);
-    order.setTotal(total);
-
-    orderDAO.addOrder(order);
-    response.sendRedirect("OrderController?action=list&id=" + customerId);
 }
-
-}
-
-    
-    
-
-    
-    
- 

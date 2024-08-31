@@ -1,3 +1,4 @@
+<%@page import="model.User"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -7,11 +8,12 @@
     <link rel="stylesheet" type="text/css" href="css/home.css">
 </head>
 <body>
+    <% User user = (session != null) ? (User) session.getAttribute("user") : null; %>
     <header>
         <h1>Welcome to ABC Restaurant</h1>
         <nav>
             <ul>
-                <li><a href="reservation-form.jsp">Reservations</a></li>
+                <li><a href="ReservationController?action=list&id=<%= user.getId() %>">Reservations</a></li>
                 <li><a href="user-form.jsp">Users</a></li>
                 <li><a href="menu-form.jsp">Menu</a></li>
                 <li><a href="table-form.jsp">Tables</a></li>

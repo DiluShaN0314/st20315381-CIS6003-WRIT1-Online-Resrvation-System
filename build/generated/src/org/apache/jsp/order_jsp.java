@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import java.util.Map;
 import model.User;
 import java.util.List;
 import model.Menu;
@@ -51,6 +52,7 @@ public final class order_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html>\n");
       out.write("<head>\n");
@@ -92,16 +94,24 @@ public final class order_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        }\n");
       out.write("\n");
       out.write("        function toggleTableSelection(orderType) {\n");
-      out.write("            document.getElementById(\"table-selection\").style.display = orderType === 'dinein' ? 'block' : 'none';\n");
+      out.write("            document.getElementById(\"table-selection\").style.display = orderType === 'Dine-In' ? 'block' : 'none';\n");
       out.write("        }\n");
       out.write("    </script>\n");
       out.write("</head>\n");
       out.write("<body>\n");
       out.write("    ");
  User user = (session != null) ? (User) session.getAttribute("user") : null; 
+        System.out.println("user id order : " +user.getId());
+    
       out.write("\n");
       out.write("    <h2>Create Order</h2>\n");
-      out.write("    <form action=\"OrderController\" method=\"post\">\n");
+      out.write("    <form action=\"OrderController\" method=\"post\">        \n");
+      out.write("        <input type=\"hidden\" name=\"id\" value=\"");
+      out.print( request.getAttribute("order") != null ? ((Order) request.getAttribute("order")).getId() : "" );
+      out.write("\">\n");
+      out.write("        <input type=\"hidden\" name=\"userID\" value=\"");
+      out.print( user.getId() );
+      out.write("\">\n");
       out.write("        <h3>Select Items</h3>\n");
       out.write("        <div id=\"menu-items\">\n");
       out.write("            ");
@@ -130,7 +140,12 @@ public final class order_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("</span>\n");
       out.write("                <input type=\"number\" name=\"quantities[");
       out.print( menu.getId() );
-      out.write("]\" class=\"quantity\" value=\"0\" min=\"0\" onchange=\"calculateTotal()\">\n");
+      out.write("]\" class=\"quantity\" \n");
+      out.write("                    value=\"");
+      out.print( (request.getAttribute("order") != null && ((Order) request.getAttribute("order")).getItemQuantities().get(menu.getId()) != null) ? 
+                               ((Order) request.getAttribute("order")).getItemQuantities().get(menu.getId()) : 0 );
+      out.write("\" \n");
+      out.write("                    min=\"0\" onchange=\"calculateTotal()\">\n");
       out.write("                <span class=\"price\">$");
       out.print( menu.getPrice() );
       out.write("</span>\n");
@@ -144,29 +159,55 @@ public final class order_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        </div>\n");
       out.write("        <h3>Order Type</h3>\n");
       out.write("        <select name=\"orderType\" onchange=\"toggleTableSelection(this.value)\">\n");
-      out.write("            <option value=\"delivery\">Delivery</option>\n");
-      out.write("            <option value=\"dinein\">Dine-In</option>\n");
-      out.write("            <option value=\"takeaway\">Take-Away</option>\n");
+      out.write("            <option value=\"\">Select Order Type</option>\n");
+      out.write("            <option value=\"Delivery\"\n");
+      out.write("                    ");
+      out.print( request.getAttribute("order") != null && 
+                        "Delivery".equals(((Order) request.getAttribute("order")).getOrderType()) ? "selected" : "" );
+      out.write(" >\n");
+      out.write("                Delivery\n");
+      out.write("           </option>\n");
+      out.write("            <option value=\"Dine-In\"\n");
+      out.write("                     ");
+      out.print( request.getAttribute("order") != null && 
+                        "Dine-In".equals(((Order) request.getAttribute("order")).getOrderType()) ? "selected" : "" );
+      out.write(">\n");
+      out.write("                Dine-In\n");
+      out.write("            </option>\n");
+      out.write("            <option value=\"Takeaway\"\n");
+      out.write("                    ");
+      out.print( request.getAttribute("order") != null && 
+                        "Takeaway".equals(((Order) request.getAttribute("order")).getOrderType()) ? "selected" : "" );
+      out.write(">\n");
+      out.write("                Take-Away\n");
+      out.write("            </option>\n");
       out.write("        </select>\n");
       out.write("        \n");
       out.write("        <div id=\"table-selection\" style=\"display:none;\">\n");
       out.write("            <h3>Select Table</h3>\n");
       out.write("            <select name=\"tableId\">\n");
+      out.write("                <option value=\"\">Select a Table</option>\n");
       out.write("                ");
 
                     List<Table> tableList = (List<Table>) request.getAttribute("tableList");
                     if (tableList != null) {
+                        Order order = (Order) request.getAttribute("order");
+                        int tableID = (order != null) ? order.getTableId(): null; // Extract role as int
                         for (Table table : tableList) {
                 
       out.write("\n");
       out.write("                <option value=\"");
       out.print( table.getId() );
       out.write('"');
-      out.write('>');
+      out.write(' ');
+      out.print( (table.getId() == tableID) ? "selected" : "");
+      out.write(">\n");
+      out.write("                    ");
       out.print( table.getId() );
       out.write(" - Capacity: ");
       out.print( table.getCapacity() );
-      out.write("</option>\n");
+      out.write("\n");
+      out.write("                </option>\n");
       out.write("                ");
 
                         }
@@ -183,6 +224,10 @@ public final class order_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\">\n");
       out.write("    </form>\n");
       out.write("</body>\n");
+      out.write("<script>\n");
+      out.write("    calculateTotal();\n");
+      out.write("    toggleTableSelection(document.getElementsByName('orderType')[0].value);\n");
+      out.write(" </script>\n");
       out.write("</html>\n");
     } catch (Throwable t) {
       if (!(t instanceof SkipPageException)){

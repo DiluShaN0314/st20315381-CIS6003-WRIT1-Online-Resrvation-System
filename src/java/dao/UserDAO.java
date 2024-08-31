@@ -139,4 +139,48 @@ public class UserDAO {
         }
         return null;
     }
+
+    public List<User> getAllStaff() throws SQLException {
+        String sql = "SELECT u.* , r.RoleName FROM users u LEFT JOIN roles r ON r.RoleID = u.RoleID WHERE u.RoleID != 3";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        List<User> users = new ArrayList<>();
+
+        while (resultSet.next()) {
+            User user = new User();
+            user.setId(resultSet.getInt("UserID"));
+            user.setUsername(resultSet.getString("Username"));
+            user.setPassword(resultSet.getString("Password"));
+            user.setEmail(resultSet.getString("Email"));
+            user.setRoleId(resultSet.getInt("RoleID"));
+            user.setName(resultSet.getString("Name"));
+            user.setContactInfo(resultSet.getString("ContactInfo"));
+            user.setImagePath(resultSet.getString("Image"));
+            user.setRole(resultSet.getString("RoleName"));
+            users.add(user);
+        }
+        return users;
+    }
+
+    public List<User> getAllCustomer() throws SQLException {
+        String sql = "SELECT u.* , r.RoleName FROM users u LEFT JOIN roles r ON r.RoleID = u.RoleID WHERE u.RoleID = 3";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        List<User> users = new ArrayList<>();
+
+        while (resultSet.next()) {
+            User user = new User();
+            user.setId(resultSet.getInt("UserID"));
+            user.setUsername(resultSet.getString("Username"));
+            user.setPassword(resultSet.getString("Password"));
+            user.setEmail(resultSet.getString("Email"));
+            user.setRoleId(resultSet.getInt("RoleID"));
+            user.setName(resultSet.getString("Name"));
+            user.setContactInfo(resultSet.getString("ContactInfo"));
+            user.setImagePath(resultSet.getString("Image"));
+            user.setRole(resultSet.getString("RoleName"));
+            users.add(user);
+        }
+        return users;
+    }
 }

@@ -1,5 +1,3 @@
-<%@page import="java.time.LocalDateTime"%>
-<%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.util.Map"%>
 <%@page import="model.User"%>
 <%@ page import="java.util.List" %>
@@ -54,14 +52,11 @@
 <body>
     <% User user = (session != null) ? (User) session.getAttribute("user") : null; 
         System.out.println("user id order : " +user.getId());
-           DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
-            LocalDateTime now = LocalDateTime.now();  
-            System.out.println("today now " +dtf.format(now)); 
     %>
     <h2>Create Order</h2>
     <form action="OrderController" method="post">        
         <input type="hidden" name="id" value="<%= request.getAttribute("order") != null ? ((Order) request.getAttribute("order")).getId() : "" %>">
-        
+        <input type="hidden" name="userID" value="<%= user.getId() %>">
         <h3>Select Items</h3>
         <div id="menu-items">
             <%
@@ -117,10 +112,11 @@
                     List<Table> tableList = (List<Table>) request.getAttribute("tableList");
                     if (tableList != null) {
                         Order order = (Order) request.getAttribute("order");
-                        int tableID = (order != null) ? order.getTableId(): -1; // Extract role as int
+//                        System.out.println("table id order 1 : "+ order.getTableId());
+                        int tableID = (order != null) && order.getTableId() != null ? order.getTableId(): 0; // Extract role as int
                         for (Table table : tableList) {
                 %>
-                <option value="<%= table.getId() %>" <%= (table.getId() == tableID) ? "selected" : 0%>>
+                <option value="<%= table.getId() %>" <%= (table.getId() == tableID) ? "selected" : ""%>>
                     <%= table.getId() %> - Capacity: <%= table.getCapacity() %>
                 </option>
                 <%
@@ -135,4 +131,8 @@
         <input type="submit" name="action"  value="<%= request.getAttribute("order") != null ? "update" : "placeOrder" %>">
     </form>
 </body>
+<script>
+    calculateTotal();
+    toggleTableSelection(document.getElementsByName('orderType')[0].value);
+ </script>
 </html>

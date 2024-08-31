@@ -1,8 +1,11 @@
 package controller;
 
 import dao.ReservationDAO;
+import dao.UserDAO;
+import dao.TableDAO;
 import model.Reservation;
-
+import model.Table;
+import model.User;
 
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
@@ -19,17 +22,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import model.User;
 
 @WebServlet("/ReservationController")
 public class ReservationController extends HttpServlet {
 
     private ReservationDAO reservationDAO;
+    private UserDAO userDAO;
+    private TableDAO tableDAO;
 
     @Override
     public void init() throws ServletException {
         try {
             reservationDAO = new ReservationDAO();
+            userDAO = new UserDAO();
+            tableDAO = new TableDAO();
         } catch (SQLException e) {
             throw new ServletException(e);
         }
@@ -52,7 +58,13 @@ public class ReservationController extends HttpServlet {
         
         switch (action) {
             case "new":
+        {
+            try {
                 showNewForm(request, response);
+            } catch (SQLException ex) {
+                Logger.getLogger(ReservationController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
                 break;
             case "insert":
                 insertReservation(request, response);
@@ -116,14 +128,26 @@ public class ReservationController extends HttpServlet {
 
     
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
+        List<User> staffList = userDAO.getAllStaff();
+        List<User> customerList = userDAO.getAllCustomer();
+        List<Table> tableList = tableDAO.getAllTables();
+        request.setAttribute("staffList", staffList);
+        request.setAttribute("customerList", customerList);
+        request.setAttribute("tableList", tableList);
         RequestDispatcher dispatcher = request.getRequestDispatcher("reservation-form.jsp");
         dispatcher.forward(request, response);
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, SQLException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        int id = Integer.parseInt(request.getParameter("id"));        
+        List<User> staffList = userDAO.getAllStaff();      
+        List<User> customerList = userDAO.getAllCustomer();
+        List<Table> tableList = tableDAO.getAllTables();
+        request.setAttribute("staffList", staffList);
+        request.setAttribute("customerList", customerList);
+        request.setAttribute("tableList", tableList);
         Reservation existingReservation = reservationDAO.getReservation(id);
         request.setAttribute("reservation", existingReservation);
 //        request.setAttribute("roles", getRolesFromDatabase());
@@ -135,6 +159,7 @@ public class ReservationController extends HttpServlet {
         throws ServletException, IOException {
         String customerID = request.getParameter("customerId");
         String staffID = request.getParameter("staffId");
+        String tableID = request.getParameter("tableId");
         // Add null checks
         if (customerID == null || customerID.isEmpty()) {
             throw new ServletException("CustomerID is missing");
@@ -150,6 +175,9 @@ public class ReservationController extends HttpServlet {
         reservation.setCustomerID(Integer.parseInt(customerID));
         if (staffID != null && !staffID.isEmpty()) {
             reservation.setStaffID(Integer.parseInt(staffID));
+        }
+        if (tableID != null && !tableID.isEmpty()) {
+            reservation.setTableID(Integer.parseInt(tableID));
         }
         reservation.setReservationType(reservationType);
         reservation.setReservationTime(reservationTime);
@@ -171,6 +199,7 @@ public class ReservationController extends HttpServlet {
         
         String customerID = request.getParameter("customerId");
         String staffID = request.getParameter("staffId");
+        String tableID = request.getParameter("tableId");
         // Add null checks
         if (customerID == null || customerID.isEmpty()) {
             throw new ServletException("CustomerID is missing");
@@ -186,6 +215,9 @@ public class ReservationController extends HttpServlet {
         reservation.setCustomerID(Integer.parseInt(customerID));
         if (staffID != null && !staffID.isEmpty()) {
             reservation.setStaffID(Integer.parseInt(staffID));
+        }
+        if (tableID != null && !tableID.isEmpty()) {
+            reservation.setTableID(Integer.parseInt(tableID));
         }
         reservation.setReservationType(reservationType);
         reservation.setReservationTime(reservationTime);

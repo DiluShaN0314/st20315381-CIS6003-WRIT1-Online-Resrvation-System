@@ -38,6 +38,14 @@
     %>
         <h2>Welcome Back <%= user.getName() %> !! </h2>
         <!-- Add other user details as needed -->
+        <h3>Offers will Announce Soon !!!</h3>
+        
+        <!-- Menu Page Iframe -->
+        <div class="menu-section">
+            <h3>Explore Our Menu</h3>
+            <iframe src="MenuController" width="100%" height="600px" frameborder="0" allowfullscreen></iframe>
+            <p>Please note that the menu is subject to change and may be cached by your browser. Refresh the page to see the latest updates.</p>
+        </div>
     <%
         } else {
     %>
@@ -46,6 +54,7 @@
     <%
         }
     %>
+    
     <footer>
         <p>&copy; 2024 ABC Restaurant. All rights reserved.</p>
     </footer>

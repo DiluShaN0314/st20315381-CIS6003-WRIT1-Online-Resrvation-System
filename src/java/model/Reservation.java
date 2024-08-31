@@ -6,6 +6,7 @@ public class Reservation {
     private int reservationID;
     private int customerID;
     private Integer staffID;
+    private Integer tableID;
     private String reservationType;
     private String reservationTime;
     private int numberOfGuests;
@@ -60,5 +61,13 @@ public class Reservation {
     }
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public void setTableID(int TableID) {
+        this.tableID = tableID;
+    }
+    
+    public int getTableID() {
+        return tableID;
     }
 }

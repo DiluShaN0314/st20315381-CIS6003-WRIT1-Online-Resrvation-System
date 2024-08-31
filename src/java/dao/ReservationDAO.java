@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import util.DatabaseConnection;
@@ -19,7 +20,7 @@ public class ReservationDAO {
     }
 
     public void addReservation(Reservation reservation) throws SQLException {
-        String sql = "INSERT INTO reservations (CustomerID, StaffID, ReservationType, ReservationTime, NumberOfGuests, Status, PaymentStatus) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reservations (CustomerID, StaffID, ReservationType, ReservationTime, NumberOfGuests, Status, PaymentStatus, TableID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = connection.prepareStatement(sql);
         stmt.setInt(1, reservation.getCustomerID());
         stmt.setObject(2, reservation.getStaffID());
@@ -28,6 +29,7 @@ public class ReservationDAO {
         stmt.setInt(5, reservation.getNumberOfGuests());
         stmt.setString(6, reservation.getStatus());
         stmt.setString(7, reservation.getPaymentStatus());
+        stmt.setObject(8, reservation.getTableID(), Types.INTEGER);
         stmt.executeUpdate();
     }
 
@@ -82,7 +84,7 @@ public class ReservationDAO {
         PreparedStatement stmt;
         
         if(reservation.getStaffID() > 0) {
-            sql = "UPDATE reservations SET CustomerID = ?, StaffID = ?, ReservationType = ?, ReservationTime = ?, NumberOfGuests = ?, Status = ?, PaymentStatus = ? WHERE ReservationId=D = ?)";
+            sql = "UPDATE reservations SET CustomerID = ?, StaffID = ?, ReservationType = ?, ReservationTime = ?, NumberOfGuests = ?, Status = ?, PaymentStatus = ?, TableID = ? WHERE ReservationId=D = ?)";
             stmt = connection.prepareStatement(sql);
             stmt.setInt(1, reservation.getCustomerID());
             stmt.setObject(2, reservation.getStaffID());
@@ -91,9 +93,10 @@ public class ReservationDAO {
             stmt.setInt(5, reservation.getNumberOfGuests());
             stmt.setString(6, reservation.getStatus());
             stmt.setString(7, reservation.getPaymentStatus());
-            stmt.setInt(8, reservation.getReservationID());
+            stmt.setObject(8, reservation.getTableID(), Types.INTEGER);
+            stmt.setInt(9, reservation.getReservationID());
         } else {
-            sql = "UPDATE reservations SET CustomerID = ?, ReservationType = ?, ReservationTime = ?, NumberOfGuests = ?, Status = ?, PaymentStatus = ? WHERE ReservationId=D = ?)";
+            sql = "UPDATE reservations SET CustomerID = ?, ReservationType = ?, ReservationTime = ?, NumberOfGuests = ?, Status = ?, PaymentStatus = ?, TableID = ? WHERE ReservationId=D = ?)";
             stmt = connection.prepareStatement(sql);
             stmt.setInt(1, reservation.getCustomerID());
             stmt.setString(2, reservation.getReservationType());
@@ -101,7 +104,8 @@ public class ReservationDAO {
             stmt.setInt(4, reservation.getNumberOfGuests());
             stmt.setString(5, reservation.getStatus());
             stmt.setString(6, reservation.getPaymentStatus());
-            stmt.setInt(7, reservation.getReservationID());
+            stmt.setObject(7, reservation.getTableID(), Types.INTEGER);
+            stmt.setInt(8, reservation.getReservationID());
         }
         
         stmt.executeUpdate();
