@@ -54,7 +54,16 @@
     <%
         }
     %>
-    
+    <main>
+        <section>
+            <h2>Our Services</h2>
+            <p>At ABC Restaurant, we offer a wide range of services to make your dining experience exceptional. Browse through our reservation system, explore our menu, or check out our available tables.</p>
+        </section>
+        <section>
+            <h2>Contact Us</h2>
+            <p>If you have any questions, feel free to <a href="mailto:info@abcrestaurant.com">email us</a>.</p>
+        </section>
+    </main>
     <footer>
         <p>&copy; 2024 ABC Restaurant. All rights reserved.</p>
     </footer>

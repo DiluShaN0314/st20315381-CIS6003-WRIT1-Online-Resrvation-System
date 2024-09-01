@@ -8,15 +8,21 @@
     <link rel="stylesheet" type="text/css" href="css/home.css">
 </head>
 <body>
-    <% User user = (session != null) ? (User) session.getAttribute("user") : null; %>
+    <% 
+        User user = (session != null) ? (User) session.getAttribute("user") : null; 
+        int role = (user != null) ? user.getRoleId(): 0;
+    %>
     <header>
         <h1>Welcome to ABC Restaurant</h1>
         <nav>
             <ul>
                 <li><a href="ReservationController?action=list&id=<%= user.getId() %>">Reservations</a></li>
-                <li><a href="user-form.jsp">Users</a></li>
-                <li><a href="menu-form.jsp">Menu</a></li>
-                <li><a href="table-form.jsp">Tables</a></li>
+                <li><a href="OrderController?action=list&id=<%= user.getId() %>">Orders</a></li>
+                <% if (role == 1) { %> <!-- Check if the user is an admin -->
+                    <li><a href="UserController?action=new">Users</a></li>
+                    <li><a href="menu-form.jsp">Menu</a></li>
+                    <li><a href="table-form.jsp">Tables</a></li>
+                <% } %>
             </ul>
         </nav>
         <button class="logout-button" onclick="confirmLogout()">Logout</button> <!-- Logout Button -->

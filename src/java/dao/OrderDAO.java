@@ -9,22 +9,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import model.User;
 import util.DatabaseConnection;
 
 public class OrderDAO {
     private Connection connection;
-
+    private UserDAO userDAO;
     public OrderDAO() throws SQLException {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
     // Fetch orders by customer ID
     public List<Order> getOrdersByCustomerId(int customerId) throws SQLException {
+        userDAO = new UserDAO();
+        User user = userDAO.getUser(customerId);
         List<Order> orderList = new ArrayList<>();
-        String query = "SELECT * FROM orders WHERE CustomerID = ?";
+        
+        String query = user.getRoleId() == 3 ? "SELECT * FROM orders WHERE CustomerID = ?" : "SELECT * FROM orders";
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, customerId);
+            if(user.getRoleId() == 3){ pstmt.setInt(1, customerId);}
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Order order = new Order();

@@ -156,55 +156,40 @@ public class ReservationController extends HttpServlet {
     }
 
     private void insertReservation(HttpServletRequest request, HttpServletResponse response) 
-        throws ServletException, IOException {
-        String customerID = request.getParameter("customerId");
-        String staffID = request.getParameter("staffId");
-        String tableID = request.getParameter("tableId");
-        // Add null checks
-        if (customerID == null || customerID.isEmpty()) {
-            throw new ServletException("CustomerID is missing");
+            throws ServletException, IOException {
+        Reservation reservation = buildReservationFromRequest(request);
+        
+        try {
+            System.out.println("Inserting reservation: " + reservation); // <-- Add this line for debugging
+            reservationDAO.addReservation(reservation);
+            response.sendRedirect("ReservationController?action=list&id=" + reservation.getCustomerID());
+        } catch (SQLException e) {
+            e.printStackTrace(); // <-- Add this line to print the stack trace
+            throw new ServletException(e);
         }
+    }
 
-        String reservationType = request.getParameter("reservationType");
-        String reservationTime = request.getParameter("reservationTime");
-        String numberOfGuests = request.getParameter("numberOfGuests");
-        String status = request.getParameter("status");
-        String paymentStatus = request.getParameter("paymentStatus");
-
-        Reservation reservation = new Reservation();
-        reservation.setCustomerID(Integer.parseInt(customerID));
-        if (staffID != null && !staffID.isEmpty()) {
-            reservation.setStaffID(Integer.parseInt(staffID));
-        }
-        if (tableID != null && !tableID.isEmpty()) {
-            reservation.setTableID(Integer.parseInt(tableID));
-        }
-        reservation.setReservationType(reservationType);
-        reservation.setReservationTime(reservationTime);
-        reservation.setNumberOfGuests(Integer.parseInt(numberOfGuests));
-        reservation.setStatus(status);
-        reservation.setPaymentStatus(paymentStatus);
+    private void updateReservation(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException, ServletException, SQLException {
+        Reservation reservation = buildReservationFromRequest(request);
 
         try {
-            reservationDAO.addReservation(reservation);
-        response.sendRedirect("ReservationController?action=list&id="+Integer.parseInt(customerID));
+            System.out.println("Updating reservation: " + reservation); // <-- Add this line for debugging
+            reservationDAO.updateReservation(reservation);
+            response.sendRedirect("ReservationController?action=list&id=" + reservation.getCustomerID());
         } catch (SQLException e) {
             throw new ServletException(e);
         }
-
     }
 
-
-    private void updateReservation(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
-        
+    private Reservation buildReservationFromRequest(HttpServletRequest request) throws ServletException {
         String customerID = request.getParameter("customerId");
-        String staffID = request.getParameter("staffId");
-        String tableID = request.getParameter("tableId");
-        // Add null checks
         if (customerID == null || customerID.isEmpty()) {
             throw new ServletException("CustomerID is missing");
         }
 
+        String staffID = request.getParameter("staffId");
+        String tableID = request.getParameter("tableId");
         String reservationType = request.getParameter("reservationType");
         String reservationTime = request.getParameter("reservationTime");
         String numberOfGuests = request.getParameter("numberOfGuests");
@@ -218,17 +203,94 @@ public class ReservationController extends HttpServlet {
         }
         if (tableID != null && !tableID.isEmpty()) {
             reservation.setTableID(Integer.parseInt(tableID));
+        } else {
+            reservation.setTableID(null); // Or set a default value
         }
+
         reservation.setReservationType(reservationType);
         reservation.setReservationTime(reservationTime);
         reservation.setNumberOfGuests(Integer.parseInt(numberOfGuests));
         reservation.setStatus(status);
         reservation.setPaymentStatus(paymentStatus);
 
-        reservationDAO.updateReservation(reservation);
-        response.sendRedirect("ReservationController?action=list&id="+Integer.parseInt(customerID));
-
+        return reservation;
     }
+
+    
+//    private void insertReservation(HttpServletRequest request, HttpServletResponse response) 
+//        throws ServletException, IOException {
+//        String customerID = request.getParameter("customerId");
+//        String staffID = request.getParameter("staffId");
+//        String tableID = request.getParameter("tableId");
+//        // Add null checks
+//        if (customerID == null || customerID.isEmpty()) {
+//            throw new ServletException("CustomerID is missing");
+//        }
+//        
+//        String reservationType = request.getParameter("reservationType");
+//        String reservationTime = request.getParameter("reservationTime");
+//        String numberOfGuests = request.getParameter("numberOfGuests");
+//        String status = request.getParameter("status");
+//        String paymentStatus = request.getParameter("paymentStatus");
+//        
+//        Reservation reservation = new Reservation();
+//        reservation.setCustomerID(Integer.parseInt(customerID));
+//        if (staffID != null && !staffID.isEmpty()) {
+//            reservation.setStaffID(Integer.parseInt(staffID));
+//        }
+//        if (tableID != null && !tableID.isEmpty()) {
+//            reservation.setTableID(Integer.parseInt(tableID));
+//        }
+//        reservation.setReservationType(reservationType);
+//        reservation.setReservationTime(reservationTime);
+//        reservation.setNumberOfGuests(Integer.parseInt(numberOfGuests));
+//        reservation.setStatus(status);
+//        reservation.setPaymentStatus(paymentStatus);
+//
+//        try {
+//            reservationDAO.addReservation(reservation);
+//        response.sendRedirect("ReservationController?action=list&id="+Integer.parseInt(customerID));
+//        } catch (SQLException e) {
+//            throw new ServletException(e);
+//        }
+//
+//    }
+//
+//
+//    private void updateReservation(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
+//        
+//        String customerID = request.getParameter("customerId");
+//        String staffID = request.getParameter("staffId");
+//        String tableID = request.getParameter("tableId");
+//        // Add null checks
+//        if (customerID == null || customerID.isEmpty()) {
+//            throw new ServletException("CustomerID is missing");
+//        }
+//
+//        String reservationType = request.getParameter("reservationType");
+//        String reservationTime = request.getParameter("reservationTime");
+//        String numberOfGuests = request.getParameter("numberOfGuests");
+//        String status = request.getParameter("status");
+//        String paymentStatus = request.getParameter("paymentStatus");
+//
+//        Reservation reservation = new Reservation();
+//        reservation.setCustomerID(Integer.parseInt(customerID));
+//        if (staffID != null && !staffID.isEmpty()) {
+//            reservation.setStaffID(Integer.parseInt(staffID));
+//        }
+//        if (tableID != null && !tableID.isEmpty()) {
+//            reservation.setTableID(Integer.parseInt(tableID));
+//        }
+//        reservation.setReservationType(reservationType);
+//        reservation.setReservationTime(reservationTime);
+//        reservation.setNumberOfGuests(Integer.parseInt(numberOfGuests));
+//        reservation.setStatus(status);
+//        reservation.setPaymentStatus(paymentStatus);
+//
+//        reservationDAO.updateReservation(reservation);
+//        response.sendRedirect("ReservationController?action=list&id="+Integer.parseInt(customerID));
+//
+//    }
 
     private void cancelReservation(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
         int id = Integer.parseInt(request.getParameter("id"));

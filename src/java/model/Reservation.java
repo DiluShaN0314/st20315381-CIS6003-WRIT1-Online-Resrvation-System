@@ -63,11 +63,14 @@ public class Reservation {
         this.paymentStatus = paymentStatus;
     }
 
-    public void setTableID(int TableID) {
+    public void setTableID(Integer tableID) {
         this.tableID = tableID;
     }
     
-    public int getTableID() {
+    public Integer getTableID() { 
+        if (tableID == null) {
+            return 0; // Or any default value that makes sense in your context
+        }
         return tableID;
     }
 }

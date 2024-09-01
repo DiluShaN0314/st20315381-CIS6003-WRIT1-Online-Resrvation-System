@@ -27,6 +27,7 @@
     %>
     <h2>Create a Reservation</h2>
     <form action="ReservationController" method="post">
+        <input type="hidden" name="id" value="<%= request.getAttribute("reservation") != null ? ((Reservation) request.getAttribute("reservation")).getReservationID(): "" %>">
         <label for="customerId">Customer ID:</label>
        <% if(user.getRoleId() == 3) { %> 
         <input type="text" id="customerId" name="customerId" value="<%= request.getAttribute("reservation") != null ? ((Reservation) request.getAttribute("reservation")).getCustomerID() : customerId %>" required><br>
